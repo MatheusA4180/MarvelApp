@@ -1,12 +1,10 @@
-package com.example.core.data.network.response
+package com.example.marvelapp.framework.network.response
 
 import com.google.gson.annotations.SerializedName
 
-data class CharacterResponse(
+data class ComicResponse(
     @SerializedName("id")
     val id: Int,
-    @SerializedName("name")
-    val name: String,
     @SerializedName("thumbnail")
     val thumbnail: ThumbnailResponse
 )
