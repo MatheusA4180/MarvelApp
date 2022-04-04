@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 //import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -31,9 +32,7 @@ class CharactersFragment : Fragment() {
 
     //@Inject
     //lateinit var imageLoader: ImageLoader
-
-    //private lateinit var charactersAdapter: CharactersAdapter
-    private var charactersAdapter: CharactersAdapter = CharactersAdapter()
+    private lateinit var charactersAdapter: CharactersAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,17 +51,16 @@ class CharactersFragment : Fragment() {
         observeInitialLoadState()
 
         lifecycleScope.launch {
-            viewModel.charactersPagingData("").collect { pagingData ->
-                charactersAdapter.submitData(pagingData)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.charactersPagingData("").collect { pagingData ->
+                    charactersAdapter.submitData(pagingData)
+                }
             }
-            //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-
-            //}
         }
     }
 
     private fun initCharactersAdapter() {
-//        charactersAdapter = CharactersAdapter(imageLoader) { character, view ->
+        charactersAdapter = CharactersAdapter()//imageLoader) { character, view ->
 //            val extras = FragmentNavigatorExtras(
 //                view to character.name
 //            )
@@ -83,52 +81,53 @@ class CharactersFragment : Fragment() {
         with(binding.recyclerCharacters) {
             scrollToPosition(0)
             setHasFixedSize(true)
-            adapter = charactersAdapter
-//                .withLoadStateFooter(
-//                footer = CharactersLoadStateAdapter(
-//                    charactersAdapter::retry
-//                )
-//            )
+            adapter = charactersAdapter.withLoadStateFooter(
+                footer = CharactersLoadStateAdapter(
+                    charactersAdapter::retry
+                )
+            )
         }
     }
 
     private fun observeInitialLoadState() {
-//        lifecycleScope.launch {
-//            charactersAdapter.loadStateFlow.collectLatest { loadState ->
-//                binding.flipperCharacters.displayedChild = when (loadState.refresh) {
-//                    is LoadState.Loading -> {
-//                        setShimmerVisibility(true)
-//                        FLIPPER_CHILD_LOADING
-//                    }
-//                    is LoadState.NotLoading -> {
-//                        setShimmerVisibility(false)
-//                        FLIPPER_CHILD_CHARACTERS
-//                    }
-//                    is LoadState.Error -> {
-//                        setShimmerVisibility(false)
-//                        binding.includeViewCharactersErrorState.buttonRetry.setOnClickListener {
-//                            charactersAdapter.retry()
-//                        }
-//                        FLIPPER_CHILD_ERROR
-//                    }
-//                }
-//            }
-//        }
+        lifecycleScope.launch {
+            charactersAdapter.loadStateFlow.collectLatest { loadState ->
+                binding.flipperCharacters.displayedChild = when (loadState.refresh) {
+                    is LoadState.Loading -> {
+                        setShimmerVisibility(true)
+                        FLIPPER_CHILD_LOADING
+                    }
+                    is LoadState.NotLoading -> {
+                        setShimmerVisibility(false)
+                        FLIPPER_CHILD_CHARACTERS
+                    }
+                    is LoadState.Error -> {
+                        setShimmerVisibility(false)
+                        binding.includeViewCharactersErrorState.buttonRetry.setOnClickListener {
+                            charactersAdapter.retry()
+                        }
+                        FLIPPER_CHILD_ERROR
+                    }
+                }
+            }
+        }
     }
+
     @Suppress("UnusedPrivateMember")
     private fun setShimmerVisibility(visibility: Boolean) {
-//        binding.includeViewCharactersLoadingState.shimmerCharacters.run {
-//            isVisible = visibility
-//            if (visibility) {
-//                startShimmer()
-//            } else stopShimmer()
-//        }
+        binding.includeViewCharactersLoadingState.shimmerCharacters.run {
+            isVisible = visibility
+            if (visibility) {
+                startShimmer()
+            } else stopShimmer()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     @Suppress("UnusedPrivateMember")
     companion object {
         private const val FLIPPER_CHILD_LOADING = 0
