@@ -27,8 +27,7 @@ class CharactersFragment : Fragment() {
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding: FragmentCharactersBinding get() = _binding!!
-
-    //private val viewModel: CharactersViewModel by viewModels()
+    private val viewModel: CharactersViewModel by viewModels()
 
     //@Inject
     //lateinit var imageLoader: ImageLoader
@@ -52,21 +51,14 @@ class CharactersFragment : Fragment() {
         initCharactersAdapter()
         observeInitialLoadState()
 
-        @Suppress("MaxLineLength")
-        charactersAdapter.submitList(listOf(
-            Character(0,"Spider Man", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pocket-lint.com%2Fpt-br%2Ftv%2Fnoticias%2Fsony%2F159643-como-transmitir-o-homem-aranha-no-way-home-at-home-data-de-lancamento-aluguel-comprar&psig=AOvVaw1mgC9L_JPIch9TCbxQy1xF&ust=1648646698726000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIitx9m16_YCFQAAAAAdAAAAABAD"),
-            Character(0,"Spider Man", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pocket-lint.com%2Fpt-br%2Ftv%2Fnoticias%2Fsony%2F159643-como-transmitir-o-homem-aranha-no-way-home-at-home-data-de-lancamento-aluguel-comprar&psig=AOvVaw1mgC9L_JPIch9TCbxQy1xF&ust=1648646698726000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIitx9m16_YCFQAAAAAdAAAAABAD"),
-            Character(0,"Spider Man", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pocket-lint.com%2Fpt-br%2Ftv%2Fnoticias%2Fsony%2F159643-como-transmitir-o-homem-aranha-no-way-home-at-home-data-de-lancamento-aluguel-comprar&psig=AOvVaw1mgC9L_JPIch9TCbxQy1xF&ust=1648646698726000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIitx9m16_YCFQAAAAAdAAAAABAD"),
-            Character(0,"Spider Man", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pocket-lint.com%2Fpt-br%2Ftv%2Fnoticias%2Fsony%2F159643-como-transmitir-o-homem-aranha-no-way-home-at-home-data-de-lancamento-aluguel-comprar&psig=AOvVaw1mgC9L_JPIch9TCbxQy1xF&ust=1648646698726000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIitx9m16_YCFQAAAAAdAAAAABAD")
-        ))
+        lifecycleScope.launch {
+            viewModel.charactersPagingData("").collect { pagingData ->
+                charactersAdapter.submitData(pagingData)
+            }
+            //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-        //lifecycleScope.launch {
-        //    viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        //        viewModel.charactersPagingData("").collect { pagingData ->
-        //            charactersAdapter.submitData(pagingData)
-        //        }
-        //    }
-        //}
+            //}
+        }
     }
 
     private fun initCharactersAdapter() {
