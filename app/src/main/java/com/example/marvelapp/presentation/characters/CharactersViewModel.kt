@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CharactersViewModel @Inject constructor(
-    private val getCharactersUseCase: GetCharactersUseCaseImpl
+    private val getCharactersUseCase: GetCharactersUseCase
 ) : ViewModel() {
 
     fun charactersPagingData(query: String): Flow<PagingData<Character>> {
